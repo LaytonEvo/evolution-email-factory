@@ -399,8 +399,7 @@
     <div id="config-warning" class="config-banner" style="display: none;">
       <strong>⚠️ Configuration Required</strong><br>
       Update the config section at the bottom of this HTML file with your:<br>
-      • <code>SHOPIFY_STORE</code> — your Shopify store domain<br>
-      • <code>SHOPIFY_TOKEN</code> — your Storefront API access token<br>
+      • <code>SHOPIFY_STOREFRONT_TOKEN</code> — your Storefront API access token<br>
       • <code>N8N_WEBHOOK_URL</code> — your n8n webhook endpoint
     </div>
     
@@ -559,7 +558,7 @@
     // =====================================================
     const CONFIG = {
       // Your Shopify store domain (without https://)
-      SHOPIFY_STORE: 'evolution-golf-uk.myshopify.com',
+      SHOPIFY_STORE: 'evolutiongolf.myshopify.com',
       
       // Your Storefront API access token (NOT Admin API)
       // Create one in Shopify Admin > Settings > Apps > Develop apps
@@ -586,7 +585,7 @@
     // Fetch collections from Shopify Storefront API
     async function fetchCollections() {
       const query = `{
-        collections(first: 100) {
+        collections(first: 250) {
           edges {
             node {
               id
@@ -609,6 +608,12 @@
         });
         
         const data = await response.json();
+        
+        if (data.errors) {
+          console.error('GraphQL errors:', data.errors);
+          throw new Error(data.errors[0]?.message || 'GraphQL error');
+        }
+        
         const collections = data.data?.collections?.edges?.map(e => e.node) || [];
         
         const select = document.getElementById('collection-select');
@@ -622,6 +627,8 @@
           option.textContent = collection.title;
           select.appendChild(option);
         });
+        
+        console.log(`Loaded ${collections.length} collections`);
       } catch (error) {
         console.error('Failed to fetch collections:', error);
         document.getElementById('collection-select').innerHTML = 
@@ -632,7 +639,7 @@
     // Fetch products from Shopify Storefront API
     async function fetchProducts() {
       const query = `{
-        products(first: 100) {
+        products(first: 250) {
           edges {
             node {
               id
@@ -668,6 +675,12 @@
         });
         
         const data = await response.json();
+        
+        if (data.errors) {
+          console.error('GraphQL errors:', data.errors);
+          throw new Error(data.errors[0]?.message || 'GraphQL error');
+        }
+        
         allProducts = data.data?.products?.edges?.map(e => ({
           id: e.node.id.split('/').pop(),
           handle: e.node.handle,
@@ -678,6 +691,7 @@
           image: e.node.images.edges[0]?.node.url || ''
         })) || [];
         
+        console.log(`Loaded ${allProducts.length} products`);
         renderProducts(allProducts);
       } catch (error) {
         console.error('Failed to fetch products:', error);
