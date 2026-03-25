@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolution Golf - Template Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #006747 0%, #004d35 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header img {
+            height: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            color: rgba(255,255,255,0.8);
+            font-size: 16px;
+        }
+        
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group .hint {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #006747;
+            box-shadow: 0 0 0 3px rgba(0,103,71,0.1);
+        }
+        
+        textarea {
+            min-height: 180px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        
+        .examples {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .examples h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .examples ul {
+            list-style: none;
+            font-size: 13px;
+            color: #555;
+        }
+        
+        .examples li {
+            padding: 6px 0;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .examples li:last-child {
+            border-bottom: none;
+        }
+        
+        .examples li:hover {
+            color: #006747;
+        }
+        
+        .examples li::before {
+            content: "→ ";
+            color: #006747;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #006747 0%, #004d35 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,103,71,0.3);
+        }
+        
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .status.loading {
+            display: block;
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .status.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .status.error {
+            display: block;
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .recent-templates {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .recent-templates h3 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .template-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .template-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .template-item:hover {
+            background: #e8f5e9;
+        }
+        
+        .template-item .name {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .template-item .id {
+            font-size: 11px;
+            color: #999;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://evolutiongolf.co.uk/cdn/shop/files/evolution-golf-logo-white.png" alt="Evolution Golf">
+            <h1>Template Editor</h1>
+            <p>Edit your Klaviyo email templates with natural language</p>
+        </div>
+        
+        <div class="card">
+            <form id="editorForm">
+                <div class="form-group">
+                    <label for="template_id">Template ID</label>
+                    <div class="hint">The Klaviyo template ID from the Email Factory output</div>
+                    <input type="text" id="template_id" name="template_id" placeholder="e.g., WVCNex" required>
+                </div>
+                
+                <div class="examples">
+                    <h3>💡 Example instructions (click to use):</h3>
+                    <ul id="examplesList">
+                        <li data-text="Change the hero headline to 'Summer Sale - Up to 50% Off'">Change the hero headline to 'Summer Sale - Up to 50% Off'</li>
+                        <li data-text="Update the urgency banner to say 'Ends Midnight Sunday'">Update the urgency banner to say 'Ends Midnight Sunday'</li>
+                        <li data-text="Change all 'Shop Now' buttons to say 'View Deal'">Change all 'Shop Now' buttons to say 'View Deal'</li>
+                        <li data-text="Remove the third product from the email">Remove the third product from the email</li>
+                        <li data-text="Swap product 1 and product 2 around">Swap product 1 and product 2 around</li>
+                        <li data-text="Change the preheader text to 'Don't miss our biggest sale of the year'">Change the preheader text to 'Don't miss our biggest sale of the year'</li>
+                        <li data-text="Update the hero subtitle to 'Limited Time Only' and make the CTA say 'SHOP THE SALE'">Update the hero subtitle to 'Limited Time Only' and make the CTA say 'SHOP THE SALE'</li>
+                    </ul>
+                </div>
+                
+                <div class="form-group">
+                    <label for="instructions">What would you like to change?</label>
+                    <div class="hint">Describe the changes in plain English. You can make multiple changes at once.</div>
+                    <textarea id="instructions" name="instructions" placeholder="e.g., Change the hero headline to 'Spring Clearance' and update the urgency message to say 'Last chance - ends tonight!'" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    Apply Changes
+                </button>
+                
+                <div class="status" id="status"></div>
+            </form>
+            
+            <div class="recent-templates" id="recentTemplates" style="display: none;">
+                <h3>Recent Templates</h3>
+                <div class="template-list" id="templateList"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const WEBHOOK_URL = 'https://evogolf.app.n8n.cloud/webhook/template-editor';
+        
+        // Load recent templates from localStorage
+        function loadRecentTemplates() {
+            const recent = JSON.parse(localStorage.getItem('recentTemplates') || '[]');
+            if (recent.length > 0) {
+                document.getElementById('recentTemplates').style.display = 'block';
+                const list = document.getElementById('templateList');
+                list.innerHTML = recent.map(t => `
+                    <div class="template-item" data-id="${t.id}">
+                        <span class="name">${t.name}</span>
+                        <span class="id">${t.id}</span>
+                    </div>
+                `).join('');
+                
+                // Add click handlers
+                list.querySelectorAll('.template-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        document.getElementById('template_id').value = item.dataset.id;
+                    });
+                });
+            }
+        }
+        
+        // Save template to recent list
+        function saveRecentTemplate(id, name) {
+            let recent = JSON.parse(localStorage.getItem('recentTemplates') || '[]');
+            // Remove if already exists
+            recent = recent.filter(t => t.id !== id);
+            // Add to front
+            recent.unshift({ id, name, date: new Date().toISOString() });
+            // Keep only last 5
+            recent = recent.slice(0, 5);
+            localStorage.setItem('recentTemplates', JSON.stringify(recent));
+        }
+        
+        // Example click handlers
+        document.getElementById('examplesList').addEventListener('click', (e) => {
+            if (e.target.tagName === 'LI') {
+                document.getElementById('instructions').value = e.target.dataset.text;
+            }
+        });
+        
+        // Form submission
+        document.getElementById('editorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const status = document.getElementById('status');
+            const templateId = document.getElementById('template_id').value.trim();
+            const instructions = document.getElementById('instructions').value.trim();
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Applying changes...';
+            status.className = 'status loading';
+            status.textContent = '⏳ Fetching template and applying changes... This may take a moment.';
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        template_id: templateId,
+                        instructions: instructions
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    status.className = 'status success';
+                    status.innerHTML = `✅ <strong>Template updated successfully!</strong><br><br>
+                        <strong>Changes applied:</strong><br>${result.changes_summary || 'Changes applied as requested.'}`;
+                    
+                    // Save to recent templates
+                    saveRecentTemplate(templateId, result.template_name || 'Template');
+                    loadRecentTemplates();
+                    
+                    // Clear instructions
+                    document.getElementById('instructions').value = '';
+                } else {
+                    status.className = 'status error';
+                    status.textContent = '❌ ' + (result.error || 'Failed to update template. Please check the template ID and try again.');
+                }
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '❌ Connection error: ' + error.message;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Apply Changes';
+            }
+        });
+        
+        // Load recent templates on page load
+        loadRecentTemplates();
+    </script>
+</body>
+</html>
