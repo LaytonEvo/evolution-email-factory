@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evolution Golf - Email Factory</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #f4f4f4;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header img {
+      height: 60px;
+      margin-bottom: 16px;
+    }
+    
+    .header h1 {
+      color: #006747;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 32px;
+    }
+    
+    .form-section {
+      margin-bottom: 32px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .form-section:last-of-type {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #006747;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .section-title span {
+      background: #006747;
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    label .optional {
+      font-weight: 400;
+      color: #888;
+      font-size: 12px;
+    }
+    
+    .hint {
+      font-size: 13px;
+      color: #666;
+      margin-top: 6px;
+    }
+    
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+    
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #006747;
+      box-shadow: 0 0 0 3px rgba(0,103,71,0.1);
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    /* Card Grid for Templates/Prompts */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    
+    .card-option {
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    
+    .card-option:hover {
+      border-color: #006747;
+      background: #f8fdf8;
+    }
+    
+    .card-option.selected {
+      border-color: #006747;
+      background: #e8f5e9;
+    }
+    
+    .card-option .icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    
+    .card-option .name {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    
+    .card-option .desc {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    /* Content Source Tabs */
+    .content-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 12px;
+    }
+    
+    .content-tab {
+      padding: 10px 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.2s;
+    }
+    
+    .content-tab:hover {
+      border-color: #006747;
+      color: #006747;
+    }
+    
+    .content-tab.active {
+      border-color: #006747;
+      background: #006747;
+      color: white;
+    }
+    
+    .content-panel {
+      display: none;
+    }
+    
+    .content-panel.active {
+      display: block;
+    }
+    
+    /* Search Box */
+    .search-box {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    
+    .search-box input {
+      padding-left: 40px;
+    }
+    
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+    }
+    
+    /* Multi-select Grid */
+    .multi-select-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    
+    .multi-select-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .multi-select-item:hover {
+      border-color: #006747;
+      background: #f8fdf8;
+    }
+    
+    .multi-select-item.selected {
+      border-color: #006747;
+      background: #e8f5e9;
+    }
+    
+    .multi-select-item .checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .multi-select-item.selected .checkbox {
+      background: #006747;
+      border-color: #006747;
+      color: white;
+    }
+    
+    .multi-select-item .details {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .multi-select-item .title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .multi-select-item .meta {
+      font-size: 12px;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    
+    .product-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .product-card:hover {
+      border-color: #006747;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .product-card.selected {
+      border-color: #006747;
+      background: #e8f5e9;
+    }
+    
+    .product-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      background: #f5f5f5;
+    }
+    
+    .product-card .info {
+      padding: 10px;
+    }
+    
+    .product-card .name {
+      font-weight: 600;
+      font-size: 13px;
+      color: #333;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .product-card .price {
+      font-size: 12px;
+      color: #006747;
+      font-weight: 600;
+    }
+    
+    .product-card .vendor {
+      font-size: 11px;
+      color: #888;
+    }
+    
+    /* Selection Counter */
+    .selection-counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #e8f5e9;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #006747;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    
+    .selection-counter.empty {
+      background: #f5f5f5;
+      color: #888;
+    }
+    
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #006747 0%, #004d35 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,103,71,0.3);
+    }
+    
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Alert */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      display: none;
+    }
+    
+    .alert-success {
+      background: #e8f5e9;
+      border: 1px solid #a5d6a7;
+      color: #2e7d32;
+    }
+    
+    .alert-error {
+      background: #ffebee;
+      border: 1px solid #ef9a9a;
+      color: #c62828;
+    }
+    
+    /* Loading States */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #888;
+    }
+    
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e0e0e0;
+      border-top-color: #006747;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Config Warning */
+    .config-warning {
+      background: #fff3e0;
+      border: 1px solid #ffcc02;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      color: #e65100;
+      font-size: 14px;
+    }
+    
+    /* Custom Links */
+    .custom-link-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr auto;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: start;
+    }
+    
+    @media (max-width: 600px) {
+      .custom-link-row {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .custom-link-row input {
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+    
+    .remove-link-btn {
+      width: 38px;
+      height: 38px;
+      border: 2px solid #e0e0e0;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      transition: all 0.2s;
+    }
+    
+    .remove-link-btn:hover {
+      border-color: #c00;
+      color: #c00;
+      background: #fff5f5;
+    }
+    
+    .add-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: 2px dashed #ccc;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.2s;
+    }
+    
+    .add-link-btn:hover {
+      border-color: #006747;
+      color: #006747;
+      background: #f8fdf8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://evolutiongolf.co.uk/cdn/shop/files/Logo.png?v=1705074874" alt="Evolution Golf">
+      <h1>Email Factory</h1>
+      <p>Generate AI-powered email campaigns</p>
+    </div>
+    
+    <div class="form-card">
+      <div id="configWarning" class="config-warning" style="display: none;">
+        <strong>⚠️ Configuration Required</strong><br>
+        Update the CONFIG section at the bottom of this HTML file with your n8n URLs.
+      </div>
+      
+      <div id="alert" class="alert"></div>
+      
+      <form id="emailForm">
+        <!-- Section 1: Layout & Style -->
+        <div class="form-section">
+          <div class="section-title"><span>1</span> Choose Layout & Style</div>
+          
+          <div class="form-group">
+            <label>Email Layout</label>
+            <p class="hint" style="margin-bottom: 12px;">Select the visual structure of your email.</p>
+            <div id="templatesGrid" class="card-grid">
+              <div class="loading">Loading templates...</div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Content Style</label>
+            <p class="hint" style="margin-bottom: 12px;">Select the tone and approach for AI-generated content.</p>
+            <div id="promptsGrid" class="card-grid">
+              <div class="loading">Loading prompts...</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Section 2: Campaign Details -->
+        <div class="form-section">
+          <div class="section-title"><span>2</span> Campaign Details</div>
+          
+          <div class="form-group">
+            <label for="campaignName">Campaign Name *</label>
+            <input type="text" id="campaignName" name="campaign_name" required placeholder="e.g., Spring Sale 2026 - Drivers">
+          </div>
+          
+          <div class="form-group">
+            <label for="brief">Campaign Brief *</label>
+            <textarea id="brief" name="brief" required placeholder="Describe the campaign goals, key messages, and any specific requirements..."></textarea>
+            <p class="hint">Be specific — this guides the AI in generating your email content.</p>
+          </div>
+        </div>
+        
+        <!-- Section 3: Content Source -->
+        <div class="form-section">
+          <div class="section-title"><span>3</span> Content Source</div>
+          <p class="hint" style="margin-bottom: 16px;">Add a collection and/or custom links. All fields are optional.</p>
+          
+          <div class="form-group">
+            <label for="collection">Collection <span class="optional">(optional)</span></label>
+            <select id="collection" name="collection_handle">
+              <option value="">-- No collection --</option>
+            </select>
+            <p class="hint">Select a collection to feature products from.</p>
+          </div>
+          
+          <div class="form-group" style="margin-top: 24px;">
+            <label>Custom Links <span class="optional">(optional)</span></label>
+            <p class="hint" style="margin-bottom: 12px;">Add links to filtered collections, landing pages, or any URL you want to feature in the email.</p>
+            
+            <div id="customLinksContainer">
+              <!-- Links will be added here -->
+            </div>
+            
+            <button type="button" id="addLinkBtn" class="add-link-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add Link
+            </button>
+          </div>
+        </div>
+        
+        <!-- Section 4: Select Products -->
+        <div class="form-section">
+          <div class="section-title"><span>4</span> Select Products <span class="optional" style="font-weight: 400; font-size: 14px; color: #888;">(optional)</span></div>
+          
+          <div class="search-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="M21 21l-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="productSearch" placeholder="Search products...">
+          </div>
+          
+          <div id="productCounter" class="selection-counter empty">0 products selected</div>
+          
+          <div id="productGrid" class="product-grid">
+            <div class="loading">Loading products...</div>
+          </div>
+        </div>
+        
+        <!-- Section 5: Optional Overrides -->
+        <div class="form-section">
+          <div class="section-title"><span>5</span> Optional Overrides</div>
+          <p class="hint" style="margin-bottom: 20px;">Leave blank to let AI generate these automatically.</p>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="heroHeadline">Hero Headline <span class="optional">(optional)</span></label>
+              <input type="text" id="heroHeadline" name="hero_headline" placeholder="e.g., Spring Into Savings">
+            </div>
+            <div class="form-group">
+              <label for="heroSubtitle">Hero Subtitle <span class="optional">(optional)</span></label>
+              <input type="text" id="heroSubtitle" name="hero_subtitle" placeholder="e.g., Up to 40% off selected clubs">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="heroImage">Hero Image URL <span class="optional">(optional)</span></label>
+            <input type="text" id="heroImage" name="hero_image" placeholder="https://...">
+          </div>
+          
+          <div class="form-group">
+            <label for="urgencyMessage">Urgency Message <span class="optional">(optional)</span></label>
+            <input type="text" id="urgencyMessage" name="urgency_message" placeholder="e.g., Ends midnight Sunday!">
+          </div>
+        </div>
+        
+        <!-- Submit -->
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13"></path>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+          </svg>
+          Generate Email Campaign
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // ============================================
+    // CONFIGURATION - UPDATE THESE VALUES
+    // ============================================
+    const CONFIG = {
+      // Your n8n Shopify proxy webhook URL
+      N8N_PROXY_URL: 'https://evogolf.app.n8n.cloud/webhook/shopify-proxy',
+      
+      // Your n8n Email Factory webhook URL  
+      N8N_WEBHOOK_URL: 'https://evogolf.app.n8n.cloud/webhook/email-factory'
+    };
+    // ============================================
+    
+    // State
+    let selectedTemplate = null;
+    let selectedPrompt = null;
+    let selectedProducts = new Set();
+    let customLinks = [];
+    let allProducts = [];
+    let allTemplates = [];
+    let allPrompts = [];
+    
+    // Check config
+    function checkConfig() {
+      const isConfigured = 
+        CONFIG.N8N_PROXY_URL && 
+        !CONFIG.N8N_PROXY_URL.includes('YOUR_') &&
+        CONFIG.N8N_WEBHOOK_URL &&
+        !CONFIG.N8N_WEBHOOK_URL.includes('YOUR_');
+      
+      if (!isConfigured) {
+        document.getElementById('configWarning').style.display = 'block';
+      }
+      return isConfigured;
+    }
+    
+    // Custom Links Management
+    let linkCounter = 0;
+    
+    function addCustomLink(label = '', url = '') {
+      linkCounter++;
+      const container = document.getElementById('customLinksContainer');
+      const row = document.createElement('div');
+      row.className = 'custom-link-row';
+      row.dataset.linkId = linkCounter;
+      row.innerHTML = `
+        <input type="text" placeholder="Label (e.g., Callaway Drivers)" value="${label}" class="link-label">
+        <input type="text" placeholder="URL (e.g., https://evolutiongolf.co.uk/collections/...)" value="${url}" class="link-url">
+        <button type="button" class="remove-link-btn" title="Remove">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      `;
+      container.appendChild(row);
+      
+      row.querySelector('.remove-link-btn').addEventListener('click', () => {
+        row.remove();
+      });
+    }
+    
+    document.getElementById('addLinkBtn').addEventListener('click', () => {
+      addCustomLink();
+    });
+    
+    function getCustomLinks() {
+      const links = [];
+      document.querySelectorAll('.custom-link-row').forEach(row => {
+        const label = row.querySelector('.link-label').value.trim();
+        const url = row.querySelector('.link-url').value.trim();
+        if (url) {
+          links.push({ label: label || 'Link', url: url });
+        }
+      });
+      return links;
+    }
+    
+    // Fetch Templates
+    async function fetchTemplates() {
+      try {
+        const res = await fetch(`${CONFIG.N8N_PROXY_URL}?type=templates`);
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+          allTemplates = data.data;
+          renderTemplates(allTemplates);
+        } else {
+          document.getElementById('templatesGrid').innerHTML = '<p style="color:#c00;">Failed to load templates</p>';
+        }
+      } catch (err) {
+        console.error('Templates error:', err);
+        document.getElementById('templatesGrid').innerHTML = '<p style="color:#c00;">Failed to load templates</p>';
+      }
+    }
+    
+    function renderTemplates(templates) {
+      const grid = document.getElementById('templatesGrid');
+      if (!templates.length) {
+        grid.innerHTML = '<p style="color:#888;">No templates found</p>';
+        return;
+      }
+      
+      grid.innerHTML = templates.map(t => `
+        <div class="card-option" data-name="${t.name}" data-doc-id="${t.doc_id || ''}" data-product-card-doc-id="${t.product_card_doc_id || ''}">
+          <div class="icon">${t.icon || '📧'}</div>
+          <div class="name">${t.label || t.name}</div>
+          <div class="desc">${t.description || ''}</div>
+        </div>
+      `).join('');
+      
+      grid.querySelectorAll('.card-option').forEach(card => {
+        card.addEventListener('click', () => {
+          grid.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedTemplate = {
+            name: card.dataset.name,
+            doc_id: card.dataset.docId,
+            product_card_doc_id: card.dataset.productCardDocId || ''
+          };
+        });
+      });
+    }
+    
+    // Fetch Prompts
+    async function fetchPrompts() {
+      try {
+        const res = await fetch(`${CONFIG.N8N_PROXY_URL}?type=prompts`);
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+          allPrompts = data.data;
+          renderPrompts(allPrompts);
+        } else {
+          document.getElementById('promptsGrid').innerHTML = '<p style="color:#c00;">Failed to load prompts</p>';
+        }
+      } catch (err) {
+        console.error('Prompts error:', err);
+        document.getElementById('promptsGrid').innerHTML = '<p style="color:#c00;">Failed to load prompts</p>';
+      }
+    }
+    
+    function renderPrompts(prompts) {
+      const grid = document.getElementById('promptsGrid');
+      if (!prompts.length) {
+        grid.innerHTML = '<p style="color:#888;">No prompts found</p>';
+        return;
+      }
+      
+      grid.innerHTML = prompts.map(p => `
+        <div class="card-option" data-name="${p.name}" data-doc-id="${p.doc_id || ''}">
+          <div class="icon">${p.icon || '✍️'}</div>
+          <div class="name">${p.label || p.name}</div>
+          <div class="desc">${p.description || ''}</div>
+        </div>
+      `).join('');
+      
+      grid.querySelectorAll('.card-option').forEach(card => {
+        card.addEventListener('click', () => {
+          grid.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          selectedPrompt = {
+            name: card.dataset.name,
+            doc_id: card.dataset.docId
+          };
+        });
+      });
+    }
+    
+    // Fetch Collections
+    async function fetchCollections() {
+      try {
+        const res = await fetch(`${CONFIG.N8N_PROXY_URL}?type=collections`);
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+          const select = document.getElementById('collection');
+          select.innerHTML = '<option value="">-- No collection --</option>' + 
+            data.data.map(c => `<option value="${c.handle}">${c.title}</option>`).join('');
+        }
+      } catch (err) {
+        console.error('Collections error:', err);
+      }
+    }
+    
+    // Fetch Products
+    async function fetchProducts() {
+      try {
+        const res = await fetch(`${CONFIG.N8N_PROXY_URL}?type=products`);
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+          allProducts = data.data;
+          renderProducts(allProducts);
+        } else {
+          document.getElementById('productGrid').innerHTML = '<p style="color:#c00;">Failed to load products</p>';
+        }
+      } catch (err) {
+        console.error('Products error:', err);
+        document.getElementById('productGrid').innerHTML = '<p style="color:#c00;">Failed to load products</p>';
+      }
+    }
+    
+    function renderProducts(products) {
+      const grid = document.getElementById('productGrid');
+      if (!products.length) {
+        grid.innerHTML = '<p style="color:#888;">No products found</p>';
+        return;
+      }
+      
+      grid.innerHTML = products.map(p => `
+        <div class="product-card ${selectedProducts.has(p.id) ? 'selected' : ''}" data-id="${p.id}">
+          <img src="${p.image || 'https://via.placeholder.com/150x120?text=No+Image'}" alt="${p.title}" loading="lazy">
+          <div class="info">
+            <div class="name">${p.title}</div>
+            <div class="vendor">${p.vendor || ''}</div>
+            <div class="price">£${parseFloat(p.price).toFixed(2)}</div>
+          </div>
+        </div>
+      `).join('');
+      
+      grid.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const id = card.dataset.id;
+          if (selectedProducts.has(id)) {
+            selectedProducts.delete(id);
+            card.classList.remove('selected');
+          } else {
+            selectedProducts.add(id);
+            card.classList.add('selected');
+          }
+          updateProductCounter();
+        });
+      });
+    }
+    
+    function updateProductCounter() {
+      const counter = document.getElementById('productCounter');
+      const count = selectedProducts.size;
+      counter.textContent = `${count} product${count !== 1 ? 's' : ''} selected`;
+      counter.classList.toggle('empty', count === 0);
+    }
+    
+    // Product Search
+    document.getElementById('productSearch').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = allProducts.filter(p => 
+        p.title.toLowerCase().includes(query) ||
+        (p.vendor && p.vendor.toLowerCase().includes(query))
+      );
+      renderProducts(filtered);
+    });
+    
+    // Form Submit
+    document.getElementById('emailForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById('submitBtn');
+      const alert = document.getElementById('alert');
+      
+      // Validation
+      if (!selectedTemplate) {
+        alert.className = 'alert alert-error';
+        alert.innerHTML = '<strong>Error:</strong> Please select an email layout.';
+        alert.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      
+      if (!selectedPrompt) {
+        alert.className = 'alert alert-error';
+        alert.innerHTML = '<strong>Error:</strong> Please select a content style.';
+        alert.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading" style="padding: 0;"></span> Generating...';
+      alert.style.display = 'none';
+      
+      // Build payload
+      const formData = new FormData(e.target);
+      
+      // Get full product objects for selected products
+      const selectedProductObjects = allProducts
+        .filter(p => selectedProducts.has(p.id))
+        .map(p => ({
+          id: p.id,
+          title: p.title,
+          vendor: p.vendor || '',
+          price: p.price,
+          compare_at_price: p.compare_at_price || p.price,
+          handle: p.handle,
+          image: p.image || ''
+        }));
+      
+      const payload = {
+        template_name: selectedTemplate.name,
+        template_doc_id: selectedTemplate.doc_id,
+        product_card_doc_id: selectedTemplate.product_card_doc_id || null,
+        prompt_name: selectedPrompt.name,
+        prompt_doc_id: selectedPrompt.doc_id,
+        campaign_name: formData.get('campaign_name'),
+        brief: formData.get('brief'),
+        collection_handle: formData.get('collection_handle') || null,
+        custom_links: getCustomLinks(),
+        products: selectedProductObjects,
+        hero_headline: formData.get('hero_headline') || null,
+        hero_subtitle: formData.get('hero_subtitle') || null,
+        hero_image: formData.get('hero_image') || null,
+        urgency_message: formData.get('urgency_message') || null
+      };
+      
+      try {
+        const res = await fetch(CONFIG.N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        
+        const result = await res.json();
+        
+        if (result.success) {
+          alert.className = 'alert alert-success';
+          alert.innerHTML = `<strong>Success!</strong> ${result.message || 'Email campaign generated.'}<br>
+            ${result.klaviyo_template_id ? `Template ID: <code>${result.klaviyo_template_id}</code>` : ''}`;
+        } else {
+          throw new Error(result.message || 'Unknown error');
+        }
+      } catch (error) {
+        alert.className = 'alert alert-error';
+        alert.innerHTML = `<strong>Error:</strong> ${error.message}`;
+      }
+      
+      alert.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 2L11 13"></path>
+        <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+      </svg> Generate Email Campaign`;
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    // Initialize
+    if (checkConfig()) {
+      fetchTemplates();
+      fetchPrompts();
+      fetchCollections();
+      fetchProducts();
+    }
+  </script>
+</body>
+</html>
